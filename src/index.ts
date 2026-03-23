@@ -12,17 +12,25 @@ type Section = {
   images?: GalleryItem[];
 };
 
-const navigation = [
-  { label: 'Home', href: '#home' },
-  { label: 'Newest Veteran Recipients', href: '#newest-veteran-recipients' },
-  { label: 'About', href: '#about' },
-  { label: 'Veteran Recipients', href: '#veteran-recipients' },
-  { label: 'Events', href: '#events' },
-  { label: 'Our Volunteers', href: '#our-volunteers' },
-  { label: 'Our Supporters', href: '#our-supporters' },
+type NavigationItem = {
+  label: string;
+  tabId?: string;
+  href?: string;
+  external?: boolean;
+};
+
+const facebookUrl = 'https://www.facebook.com/people/NM-Lap-Robes-for-Veterans/61576165091710/';
+
+const navigation: NavigationItem[] = [
+/*  { label: 'Home', tabId: 'home' },
+  { label: 'Recipients', tabId: 'recipients' },
+  { label: 'Events', tabId: 'events' },
+  { label: 'Volunteers', tabId: 'volunteers' },
+  { label: 'Supporters', tabId: 'supporters' },
+  { label: 'Contact', tabId: 'contact' },*/
   {
     label: 'Visit Our Facebook Page',
-    href: 'https://www.facebook.com/people/NM-Lap-Robes-for-Veterans/61576165091710/',
+    href: facebookUrl,
     external: true,
   },
 ];
@@ -60,6 +68,9 @@ const sections: Section[] = [
       { src: 'src/images/info/AF VET.jpg', alt: 'Air Force veteran with lap robe' },
       { src: 'src/images/info/ARMY VET.jpg', alt: 'Army veteran with lap robe' },
       { src: 'src/images/info/USMC2.jpg', alt: 'Marine Corps veteran with lap robe' },
+      { src: 'src/images/info/vet home 1.JPG', alt: 'Veteran home visit with lap robe' },
+      { src: 'src/images/info/vet scarf.JPG', alt: 'Veteran scarf presentation' },
+      { src: 'src/images/info/vet scarf2.JPG', alt: 'Veteran with a customized scarf' },
     ],
   },
   {
@@ -106,7 +117,7 @@ const sections: Section[] = [
     eyebrow: 'Hands Behind Every Lap Robe',
     body: [
       'Our organization is made up strictly of volunteers in the manufacture of our lap robes. Without these unselfish men and women we would not have lap robes to distribute to our deserving veterans. These volunteers put in long hours to get these lap robes made and distributed.',
-      'Recently one of our volunteers was recognized by KOB channel 4 “Pay It Forward” as a recipient for the award for her volunteer work.',
+      'Recently one of our volunteers was recognized by KOB Channel 4 "Pay It Forward" for her volunteer work.',
     ],
     images: [
       { src: 'src/images/voluteer/sewing.jpg', alt: 'Volunteer sewing lap robes' },
@@ -152,7 +163,7 @@ const contactLines = [
   '1852 Smarty Jones Street SE',
   'Albuquerque, NM, United States, New Mexico',
   'nmlaprobesforveterans@gmail.com',
-  '(505) 604-2810',
+  '(505) 355-9801',
 ];
 
 const donationInstructions = [
@@ -162,20 +173,415 @@ const donationInstructions = [
   'Albuquerque, NM, United States, New Mexico',
 ];
 
+const currentYear = new Date().getFullYear();
+
+const sectionMap = sections.reduce<Record<string, Section>>((acc, section) => {
+  acc[section.id] = section;
+  return acc;
+}, {});
+
+const renderGallery = (items: GalleryItem[]) => {
+  if (!items.length) {
+    return '';
+  }
+
+  return `
+    <div class="gallery">
+      ${items
+        .map(
+          (item) => `
+            <figure class="gallery-card">
+              <img src="${item.src}" alt="${item.alt}" />
+              <figcaption>${item.caption ?? item.alt}</figcaption>
+            </figure>
+          `,
+        )
+        .join('')}
+    </div>
+  `;
+};
+
+const renderEventCarousel = (items: GalleryItem[]) => {
+  if (!items.length) {
+    return '';
+  }
+
+  return `
+    <div class="event-carousel" data-carousel>
+      <div class="event-carousel-track">
+        ${items
+          .map(
+            (item, index) => `
+              <figure class="gallery-card event-slide" data-slide="${index}" ${index === 0 ? '' : 'hidden'}>
+                <img src="${item.src}" alt="${item.alt}" />
+                <figcaption>${item.caption ?? item.alt}</figcaption>
+              </figure>
+            `,
+          )
+          .join('')}
+      </div>
+      <div class="event-carousel-dots" role="tablist" aria-label="Event images">
+        ${items
+          .map(
+            (_, index) => `
+              <button
+                type="button"
+                class="carousel-dot${index === 0 ? ' is-active' : ''}"
+                data-carousel-dot="${index}"
+                aria-label="Show event image ${index + 1}"
+                aria-selected="${index === 0 ? 'true' : 'false'}"
+              ></button>
+            `,
+          )
+          .join('')}
+      </div>
+    </div>
+  `;
+};
+
+const renderSectionPanel = (section: Section) => `
+  <section id="${section.id}" class="section">
+    <div class="section-panel">
+      <div class="section-layout">
+        <div class="section-copy">
+          ${section.eyebrow ? `<p class="eyebrow">${section.eyebrow}</p>` : ''}
+          <h2>${section.title}</h2>
+          ${section.body.map((paragraph) => `<p>${paragraph}</p>`).join('')}
+        </div>
+        ${section.id === 'events' ? renderEventCarousel(section.images ?? []) : renderGallery(section.images ?? [])}
+      </div>
+    </div>
+  </section>
+`;
+
+const renderHeroPanel = () => `
+   <section class="hero hero-home">
+    <div class="hero-card hero-copy">
+      <div class="hero-logo-wrap">
+        <img src="src/images/Logo.jpg" alt="NM Lap Robes For Veterans logo" class="hero-logo-image" />
+      </div>
+      <p class="eyebrow">Hand Crafted Gratitude For New Mexico Veterans</p>
+      <h1>Comfort, dignity, and gratitude for veterans across New Mexico</h1>
+      <p>${missionText}</p>
+      <div class="hero-actions">
+        <a class="button button-primary" href="#tab-contact">Support Our Mission</a>
+        <a class="button button-secondary" href="https://www.facebook.com/people/NM-Lap-Robes-for-Veterans/61576165091710/" target="_blank" rel="noreferrer">Visit Our Facebook Page</a>
+      </div>
+    </div>
+    <div class="hero-card hero-visual">
+      <img src="src/images/info/vet home 1.JPG" alt="Members of NM Lap Robes For Veterans" />
+      <div class="hero-badge">
+        Use the large tabs below to view recipients, events, volunteer work, supporters, and contact information.
+      </div>
+    </div>
+  </section>
+`;
+
+const renderFeatureHighlights = () => `
+  <section class="feature-grid" aria-label="Highlights">
+    <article class="feature-card">
+      <strong>Vision Statement</strong>
+      <span>${missionText}</span>
+    </article>
+    <article class="feature-card">
+      <strong>Newest Veteran Recipients</strong>
+      <span>Browse the Recipients tab to revisit recent deliveries.</span>
+    </article>
+    <article class="feature-card">
+      <strong>Donate or Connect</strong>
+      <span>Find donation instructions and points of contact inside the Contact tab.</span>
+    </article>
+  </section>
+`;
+
+const renderRecipientsIntro = () => `
+  <section class="section">
+    <div class="section-panel">
+      <div class="section-layout">
+        <div class="section-copy">
+          <p class="eyebrow">Recipients Tab</p>
+          <h2>Newest Veteran Recipients</h2>
+          <p>Their gratitude keeps us committed to crafting branch-specific lap robes on demand.</p>
+        </div>
+        <div class="mini-gallery">
+          ${newestRecipients
+            .map(
+              (item) => `
+                <figure class="gallery-card">
+                  <img src="${item.src}" alt="${item.alt}" />
+                  <figcaption>${item.caption ?? item.alt}</figcaption>
+                </figure>
+              `,
+            )
+            .join('')}
+        </div>
+      </div>
+    </div>
+  </section>
+`;
+
+const sanitizePhone = (value: string) => value.replace(/[^\d+]/g, '');
+
+const renderContactTab = () => `
+  <section class="section">
+    <div class="section-panel">
+      <div class="footer-grid">
+        <section class="footer-card" aria-label="Organization footer details">
+          <h3 class="footer-title">NM Lap Robes For Veterans</h3>
+          <ul class="footer-list">
+            ${donationAddress.map((line) => `<li>${line}</li>`).join('')}
+            <li><a href="tel:+15053559801">(505) 355-9801</a></li>
+            <li><a href="mailto:nmlaprobesforveterans@gmail.com">nmlaprobesforveterans@gmail.com</a></li>
+          </ul>
+        </section>
+        <section class="footer-card" aria-label="Footer note">
+          <h3 class="footer-title">Support Our Mission</h3>
+          <p class="footer-note">
+            Hand-crafted, branch-specific lap robes are provided free to veterans across New Mexico through donations and volunteer work.
+          </p>
+        </section>
+      </div>
+    </div>
+  </section>
+`;
+
+const renderPersistentFooterBand = () => {
+  const contactEmail = contactLines[3] ?? '';
+  const contactPhone = contactLines[4] ?? '';
+  const emailHref = contactEmail ? `mailto:${contactEmail}` : '#';
+  const phoneHref = contactPhone ? `tel:${sanitizePhone(contactPhone)}` : '#';
+  const donationLink = 'https://www.cnbank.com/PLACE/';
+
+  return `
+    <section class="contact-band" aria-label="Donation and contact information">
+      <div class="footer-reference-layout">
+        <div class="footer-visual-block" aria-label="Lap robe image">
+          <div class="footer-image-frame">
+            <img class="contact-image" src="src/images/img.png" alt="Lap robes ready for delivery" />
+          </div>
+        </div>
+        <div class="footer-copy-block" aria-label="Donation information">
+          <p class="contact-copy">${donationInstructions[0]}</p>
+          <ul class="contact-list contact-list--donation">
+            ${donationAddress.map((line) => `<li>${line}</li>`).join('')}
+          </ul>
+          <p class="contact-note contact-note--center">or go to</p>
+          <p class="contact-note contact-note--center">
+            <a class="donation-link" href="${donationLink}" target="_blank" rel="noreferrer">
+              https://www.cnbank.com/PLACE/
+            </a>
+          </p>
+          <p class="contact-note contact-note--center">
+            and choose NM Lap Robes for Veterans and make your donation.
+          </p>
+        </div>
+        <div class="footer-contact-block" aria-label="Contact information">
+          <h3 class="footer-heading">Contact Information</h3>
+          <ul class="contact-list contact-list--info">
+            <li>1852 Smarty Jones Street SE</li>
+            <li>Albuquerque, NM</li>
+            ${contactEmail ? `<li><a href="${emailHref}">${contactEmail}</a></li>` : ''}
+            ${contactPhone ? `<li><a href="${phoneHref}">${contactPhone}</a></li>` : ''}
+          </ul>
+          <h3 class="footer-heading footer-heading--secondary">Interested in Volunteering?</h3>
+          ${contactEmail ? `<p class="footer-volunteer">email: <a href="${emailHref}">${contactEmail}</a></p>` : ''}
+        </div>
+      </div>
+    </section>
+  `;
+};
+
+const tabs = [
+  {
+    id: 'home',
+    label: 'Home',
+    description: 'Mission overview',
+    content: `
+      ${renderHeroPanel()}
+      ${renderFeatureHighlights()}
+      ${renderSectionPanel(sectionMap['about'])}
+    `,
+  },
+  {
+    id: 'recipients',
+    label: 'Recipients',
+    description: 'Veteran galleries',
+    content: `
+      ${renderRecipientsIntro()}
+      ${renderSectionPanel(sectionMap['veteran-recipients'])}
+    `,
+  },
+  {
+    id: 'events',
+    label: 'Events',
+    description: 'Community outreach',
+    content: `
+      ${renderSectionPanel(sectionMap['events'])}
+    `,
+  },
+  {
+    id: 'volunteers',
+    label: 'Volunteers',
+    description: 'Hands behind the robes',
+    content: `
+      ${renderSectionPanel(sectionMap['our-volunteers'])}
+    `,
+  },
+  {
+    id: 'supporters',
+    label: 'Supporters',
+    description: 'Partners & donors',
+    content: `
+      ${renderSectionPanel(sectionMap['our-supporters'])}
+    `,
+  },
+  {
+    id: 'contact',
+    label: 'Contact',
+    description: 'Donate or reach out',
+    content: `
+      ${renderContactTab()}
+    `,
+  },
+];
+
+const tabTriggerMarkup = tabs
+  .map(
+    (tab) => `
+      <button type="button" class="tab-trigger" data-tab-target="${tab.id}" aria-controls="tab-${tab.id}" role="tab">
+        <span>${tab.label}</span>
+        <small>${tab.description}</small>
+      </button>
+    `,
+  )
+  .join('');
+
+const tabPanelsMarkup = tabs
+  .map(
+    (tab) => `
+      <section id="tab-${tab.id}" class="tab-panel" data-tab="${tab.id}" role="tabpanel" hidden>
+        ${tab.content}
+      </section>
+    `,
+  )
+  .join('');
+
+const navMarkup = navigation
+  .map((item) => {
+    if (item.external) {
+      return `<a href="${item.href}" target="_blank" rel="noreferrer">${item.label}</a>`;
+    }
+
+    if (!item.tabId) {
+      return '';
+    }
+
+    return `<button type="button" class="tab-link" data-tab-target="${item.tabId}" aria-controls="tab-${item.tabId}">${item.label}</button>`;
+  })
+  .join('');
+
 const app = document.createElement('div');
 app.className = 'app-shell';
 
 app.innerHTML = `
   <style>
     :root {
-      --sand: #efe0c8;
-      --clay: #bc6c43;
-      --rust: #8f3e21;
+      --sand: #ebe0cc;
+      --clay: #a76d49;
+      --rust: #7f4b2a;
       --ink: #1f2328;
-      --cream: #fcf7ef;
+      --cream: #fffaf3;
       --sage: #596b53;
+      --navy: #264653;
       --line: rgba(31, 35, 40, 0.12);
       --shadow: 0 18px 40px rgba(31, 35, 40, 0.12);
+    }
+
+    .tabs-shell {
+      width: min(1200px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .tabs-nav {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+    }
+
+    .tabs-content {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .tab-trigger,
+    .tab-link {
+      font-family: inherit;
+      font-size: 1.02rem;
+      background: rgba(255, 255, 255, 0.96);
+      border: 2px solid rgba(31, 35, 40, 0.16);
+      border-radius: 22px;
+      padding: 14px 18px;
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .tab-trigger {
+      flex-direction: column;
+      gap: 4px;
+      min-height: 104px;
+      text-align: center;
+    }
+
+    .tab-trigger span {
+      font-weight: 700;
+      font-size: 1.06rem;
+    }
+
+    .tab-trigger small {
+      font-size: 0.82rem;
+      opacity: 0.82;
+      letter-spacing: 0.02em;
+    }
+
+    .tab-link {
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-radius: 18px;
+    }
+
+    .tab-trigger.is-active,
+    .tab-link.is-active {
+      background: var(--navy);
+      border-color: var(--navy);
+      color: white;
+    }
+
+    .tab-panel {
+      animation: fadeIn 0.4s ease;
+    }
+
+    .tab-panel[hidden] {
+      display: none;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     * {
@@ -191,8 +597,8 @@ app.innerHTML = `
       font-family: Georgia, 'Times New Roman', serif;
       color: var(--ink);
       background:
-        radial-gradient(circle at top, rgba(188, 108, 67, 0.18), transparent 34%),
-        linear-gradient(180deg, #f7f1e7 0%, #f3ead8 45%, #efe0c8 100%);
+        radial-gradient(circle at top, rgba(167, 109, 73, 0.14), transparent 34%),
+        linear-gradient(180deg, #faf7f0 0%, #f3ecdf 48%, #ebe0cc 100%);
     }
 
     a {
@@ -208,19 +614,16 @@ app.innerHTML = `
       top: 0;
       z-index: 10;
       backdrop-filter: blur(12px);
-      background: rgba(252, 247, 239, 0.9);
+      background: rgba(250, 247, 240, 0.96);
       border-bottom: 1px solid var(--line);
     }
 
     .nav-wrap,
     .hero,
-    .section,
-    .contact-band,
-    .site-footer {
+    .section {
       width: min(1180px, calc(100% - 32px));
       margin: 0 auto;
     }
-
     .nav-wrap {
       display: flex;
       align-items: center;
@@ -231,19 +634,19 @@ app.innerHTML = `
 
     .brand {
       display: grid;
-      gap: 2px;
+      gap: 4px;
     }
 
     .brand-mark {
-      font-size: 0.84rem;
-      letter-spacing: 0.24em;
+      font-size: 0.88rem;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: var(--rust);
+      color: var(--navy);
       font-weight: 700;
     }
 
     .brand-name {
-      font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+      font-size: clamp(1.3rem, 2.5vw, 1.95rem);
       font-weight: 700;
     }
 
@@ -254,18 +657,22 @@ app.innerHTML = `
       gap: 10px;
     }
 
-    .nav-links a {
+    .nav-links a,
+    .nav-links button {
       text-decoration: none;
-      padding: 10px 14px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.7);
-      border: 1px solid var(--line);
+      padding: 12px 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.82);
+      border: 2px solid var(--line);
       transition: transform 0.2s ease, background 0.2s ease;
-      font-size: 0.94rem;
+      font-size: 1rem;
+      font-weight: 600;
     }
 
     .nav-links a:hover,
-    .nav-links a:focus-visible {
+    .nav-links a:focus-visible,
+    .nav-links button:hover,
+    .nav-links button:focus-visible {
       background: white;
       transform: translateY(-1px);
     }
@@ -273,48 +680,49 @@ app.innerHTML = `
     .hero {
       display: grid;
       grid-template-columns: 1.15fr 0.85fr;
-      gap: 28px;
-      padding: 36px 0 24px;
+      gap: 24px;
+      padding: 12px 0 24px;
+      align-items: stretch;
     }
 
     .hero-card,
     .feature-card,
     .section-panel,
     .contact-card {
-      background: rgba(252, 247, 239, 0.88);
+      background: rgba(255, 252, 247, 0.95);
       border: 1px solid rgba(31, 35, 40, 0.08);
-      border-radius: 26px;
+      border-radius: 28px;
       box-shadow: var(--shadow);
     }
 
     .hero-copy {
-      padding: clamp(24px, 5vw, 42px);
+      padding: clamp(28px, 5vw, 44px);
     }
 
-    .hero-logo {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 110px;
-      min-height: 110px;
-      margin-bottom: 18px;
-      border-radius: 28px;
-      background: linear-gradient(135deg, var(--rust), var(--clay));
-      color: white;
-      text-align: center;
-      padding: 16px;
-      font-size: 1.1rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
+    .hero-logo-wrap {
+      width: min(100%, 420px);
+      margin-bottom: 20px;
+      padding: 14px;
+      border-radius: 24px;
+      background: #fff;
+      border: 1px solid rgba(38, 70, 83, 0.12);
+      box-shadow: 0 12px 28px rgba(31, 35, 40, 0.08);
+    }
+
+    .hero-logo-image {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: contain;
+      border-radius: 16px;
     }
 
     .eyebrow {
       margin: 0 0 10px;
-      color: var(--rust);
+      color: var(--navy);
       text-transform: uppercase;
-      letter-spacing: 0.18em;
-      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      font-size: 0.88rem;
       font-weight: 700;
     }
 
@@ -325,8 +733,8 @@ app.innerHTML = `
     }
 
     h1 {
-      font-size: clamp(2.3rem, 5vw, 4.6rem);
-      max-width: 11ch;
+      font-size: clamp(2.3rem, 4.8vw, 4.2rem);
+      max-width: 14ch;
     }
 
     h2 {
@@ -335,10 +743,11 @@ app.innerHTML = `
 
     .hero-copy p,
     .section-copy p,
+    .contact-band p,
     .footer-card p,
     .footer-card li {
-      font-size: 1.02rem;
-      line-height: 1.7;
+      font-size: 1rem;
+      line-height: 1.8;
     }
 
     .hero-actions {
@@ -352,21 +761,23 @@ app.innerHTML = `
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 12px 18px;
-      border-radius: 999px;
+      min-height: 52px;
+      padding: 14px 20px;
+      border-radius: 18px;
       text-decoration: none;
       font-weight: 700;
-      border: 1px solid transparent;
+      border: 2px solid transparent;
+      font-size: 1rem;
     }
 
     .button-primary {
-      background: var(--ink);
+      background: var(--navy);
       color: white;
     }
 
     .button-secondary {
-      background: transparent;
-      border-color: var(--line);
+      background: #fff;
+      border-color: rgba(38, 70, 83, 0.2);
     }
 
     .hero-visual {
@@ -386,13 +797,13 @@ app.innerHTML = `
       position: absolute;
       right: 20px;
       bottom: 20px;
-      background: rgba(31, 35, 40, 0.84);
+      background: rgba(38, 70, 83, 0.9);
       color: white;
-      padding: 14px 16px;
+      padding: 16px 18px;
       border-radius: 18px;
-      max-width: 230px;
-      font-size: 0.95rem;
-      line-height: 1.5;
+      max-width: 280px;
+      font-size: 1rem;
+      line-height: 1.6;
     }
 
     .feature-grid {
@@ -401,43 +812,55 @@ app.innerHTML = `
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 18px;
-      padding: 12px 0 28px;
+      padding: 8px 0 24px;
     }
 
     .feature-card {
       padding: 24px;
+      border-top: 6px solid #8b5e3c;
     }
 
     .feature-card strong {
       display: block;
       margin-bottom: 10px;
-      font-size: 1.05rem;
+      font-size: 1.12rem;
+    }
+
+    .feature-card span {
+      font-size: 1.02rem;
+      line-height: 1.7;
     }
 
     .section {
-      padding: 28px 0;
+      padding: clamp(36px, 6vw, 72px) 0;
     }
 
     .section-panel {
-      padding: clamp(22px, 4vw, 34px);
+      width: min(1200px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: clamp(28px, 4vw, 42px);
+      background: rgba(255, 252, 247, 0.97);
+      border: 1px solid rgba(31, 35, 40, 0.08);
+      border-radius: 36px;
+      box-shadow: var(--shadow);
     }
 
     .section-layout {
       display: grid;
-      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-      gap: 26px;
-      align-items: start;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 32px;
+      align-items: stretch;
     }
 
     .section-copy {
-      position: sticky;
-      top: 112px;
+      position: static;
     }
 
     .gallery {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 16px;
+      align-items:start;
     }
 
     .gallery-card {
@@ -457,135 +880,53 @@ app.innerHTML = `
 
     .gallery-card figcaption {
       padding: 12px 14px 14px;
-      font-size: 0.92rem;
+      font-size: 1rem;
       color: rgba(31, 35, 40, 0.82);
+      line-height: 1.5;
     }
 
-    .contact-band {
-      padding: 22px 0 18px;
-    }
-
-    .contact-grid {
+    .event-carousel {
       display: grid;
-      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr) minmax(0, 1fr);
-      gap: 24px;
-      padding: 30px;
-      background: #66625f;
-      color: white;
-      border-radius: 28px;
+      gap: 16px;
+      align-content: start;
     }
 
-    .contact-card {
-      background: transparent;
-      border: 0;
-      box-shadow: none;
-      padding: 0;
+    .event-carousel-track {
+      position: relative;
     }
 
-    .contact-frame {
-      display: inline-block;
-      padding: 10px;
-      border: 6px solid rgba(255, 255, 255, 0.35);
-      box-shadow:
-        inset 0 0 0 4px rgba(0, 0, 0, 0.14),
-        0 12px 28px rgba(0, 0, 0, 0.16);
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(0, 0, 0, 0.08));
+    .event-slide {
+      margin: 0;
     }
 
-    .contact-image {
-      width: 100%;
-      max-width: 380px;
-      border-radius: 4px;
+    .event-slide[hidden] {
+      display: none;
+    }
+
+    .event-slide img {
       aspect-ratio: 4 / 3;
-      object-fit: cover;
-      display: block;
     }
 
-    .contact-copy {
-      font-size: clamp(1.15rem, 2vw, 1.5rem);
-      line-height: 1.45;
+    .event-carousel-dots {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
     }
 
-    .contact-copy p {
-      margin: 0 0 12px;
-    }
-
-    .contact-copy .donation-link {
-      display: inline-block;
-      margin: 8px 0;
-      color: #111;
-      font-weight: 700;
-      background: rgba(255, 255, 255, 0.88);
-      padding: 4px 8px;
-      border-radius: 8px;
-      text-decoration: none;
-    }
-
-    .contact-title {
-      margin: 0 0 12px;
-      font-size: clamp(2rem, 3.4vw, 3.1rem);
-      color: white;
-    }
-
-    .contact-list,
-    .footer-list {
-      list-style: none;
+    .carousel-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      border: 2px solid rgba(38, 70, 83, 0.28);
+      background: rgba(255, 255, 255, 0.9);
+      cursor: pointer;
       padding: 0;
-      margin: 0;
     }
 
-    .contact-list li,
-    .footer-list li {
-      font-size: clamp(1.05rem, 1.8vw, 1.35rem);
-      line-height: 1.6;
-    }
-
-    .contact-list li + li,
-    .footer-list li + li {
-      margin-top: 6px;
-    }
-
-    .contact-list a,
-    .footer-list a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    .contact-list a:hover,
-    .contact-list a:focus-visible,
-    .footer-list a:hover,
-    .footer-list a:focus-visible {
-      text-decoration: underline;
-    }
-
-    .site-footer {
-      padding: 0 0 42px;
-    }
-
-    .footer-grid {
-      display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 18px;
-    }
-
-    .footer-card {
-      padding: 22px;
-      background: rgba(252, 247, 239, 0.88);
-      border: 1px solid rgba(31, 35, 40, 0.08);
-      border-radius: 26px;
-      box-shadow: var(--shadow);
-    }
-
-    .footer-title {
-      margin: 0 0 12px;
-      font-size: 1.1rem;
-      color: var(--rust);
-    }
-
-    .footer-note {
-      margin: 0;
-      font-size: 0.95rem;
-      line-height: 1.6;
+    .carousel-dot.is-active {
+      background: var(--navy);
+      border-color: var(--navy);
     }
 
     .mini-gallery {
@@ -599,17 +940,301 @@ app.innerHTML = `
       aspect-ratio: 1 / 1;
     }
 
+    .contact-band {
+      padding: 14px 0 10px;
+      background: #c4c8cc;
+    }
+
+    .contact-card {
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      padding: 0;
+    }
+
+    .contact-image {
+      width: 100%;
+      max-width: 220px;
+      border-radius: 16px;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      display: block;
+    }
+
+    .contact-copy {
+      font-size: clamp(1.02rem, 1.7vw, 1.16rem);
+      line-height: 1.55;
+      color: #111;
+      margin: 0 0 12px;
+      font-weight: 400;
+    }
+
+    .contact-copy p {
+      margin: 0 0 12px;
+    }
+
+    .contact-copy .donation-link,
+    .donation-link {
+      display: inline-block;
+      color: #111;
+      font-weight: 500;
+      background: rgba(255, 255, 255, 0.45);
+      padding: 4px 8px;
+      border-radius: 8px;
+      text-decoration: none;
+      word-break: break-word;
+    }
+
+    .contact-note {
+      text-align: left;
+      color: #111;
+      margin: 10px 0;
+    }
+
+    .contact-list,
+    .footer-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .contact-list li,
+    .footer-list li {
+      font-size: clamp(1rem, 1.55vw, 1.14rem);
+      line-height: 1.65;
+      font-weight: 400;
+    }
+
+    .contact-list li + li,
+    .footer-list li + li {
+      margin-top: 10px;
+    }
+
+    .footer-card,
+    .footer-card a {
+      color: inherit;
+    }
+
+    .contact-list a,
+    .footer-list a {
+      color: #111;
+      text-decoration: none;
+      font-weight: 300;
+    }
+
+    .contact-list a:hover,
+    .contact-list a:focus-visible,
+    .footer-list a:hover,
+    .footer-list a:focus-visible {
+      text-decoration: underline;
+    }
+
+    .site-footer {
+      position: relative;
+      left: 50%;
+      right: 50%;
+      margin-left: -50vw;
+      margin-right: -50vw;
+      width: 100vw;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #6f6f6f;
+      color: #fff;
+    }
+
+    .footer-reference-layout {
+      width: min(1680px, calc(100% - 70px));
+      display: grid;
+      grid-template-columns: 0.9fr 1fr 1fr;
+      gap: 64px;
+      align-items: start;
+      padding: 72px 32px 76px;
+    }
+
+    .footer-visual-block,
+    .footer-copy-block,
+    .footer-contact-block {
+      min-width: 0;
+    }
+
+    .footer-image-frame {
+      display: inline-block;
+      padding: 10px;
+      background: linear-gradient(135deg, #d9d9d9, #8f8f8f);
+      border: 8px solid #a9a9a9;
+      box-shadow:
+        inset 0 0 0 2px #f2f2f2,
+        inset 0 0 0 8px #737373;
+    }
+
+    .contact-image {
+      width: min(100%, 360px);
+      max-width: 360px;
+      border-radius: 0;
+      aspect-ratio: 16 / 9;
+      margin: 0;
+    }
+
+    .contact-copy {
+      font-size: clamp(1.1rem, 1.8vw, 1.45rem);
+      line-height: 1.45;
+      color: #fff;
+      margin: 0 0 18px;
+      font-weight: 400;
+      max-width: 24ch;
+    }
+
+    .contact-list--donation li,
+    .contact-list--info li,
+    .footer-volunteer {
+      font-size: clamp(1rem, 1.55vw, 1.28rem);
+      line-height: 1.45;
+      font-weight: 400;
+      color: #fff;
+    }
+
+    .contact-list--donation li + li,
+    .contact-list--info li + li {
+      margin-top: 4px;
+    }
+
+    .contact-note {
+      color: #fff;
+      margin: 14px 0 0;
+    }
+
+    .contact-note--center,
+    .footer-copy-block {
+      text-align: center;
+    }
+
+    .donation-link {
+      color: #000;
+      font-weight: 700;
+      background: transparent;
+      padding: 0;
+      border-radius: 0;
+      text-decoration: none;
+    }
+
+    .footer-contact-block {
+      padding-top: 6px;
+    }
+
+    .footer-heading {
+      margin: 0 0 18px;
+      font-size: clamp(2rem, 3vw, 2.7rem);
+      line-height: 1.1;
+      color: #fff;
+      font-weight: 400;
+    }
+
+    .footer-heading--secondary {
+      margin-top: 28px;
+      font-size: clamp(1.8rem, 2.7vw, 2.35rem);
+    }
+
+    .footer-volunteer {
+      margin: 0;
+    }
+
+    .footer-volunteer a,
+    .contact-list--info a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 400;
+    }
+
+    .footer-foot {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 24px;
+      padding: 18px 44px;
+      background: #020202;
+      color: #fff;
+      font-size: 0.9rem;
+      font-weight: 400;
+    }
+
+    .footer-service {
+      justify-self: start;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      color: #fff;
+    }
+
+    .footer-service-label {
+      display: inline-block;
+      min-width: 240px;
+      padding: 4px 8px 6px;
+      background: #f4f4f4;
+      color: #6f6f6f;
+      font-size: 0.88rem;
+    }
+
+    .footer-service-link {
+      color: #204bff;
+      text-decoration: none;
+    }
+
+    .footer-copyright {
+      justify-self: center;
+      font-size: 0.98rem;
+      color: #fff;
+    }
+
+    .footer-social {
+      justify-self: end;
+      width: 62px;
+      height: 62px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 3px solid rgba(255, 255, 255, 0.65);
+      border-radius: 999px;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .footer-icon {
+      width: 28px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
     @media (max-width: 960px) {
       .hero,
       .section-layout,
-      .footer-grid,
-      .feature-grid,
-      .contact-grid {
+      .feature-grid {
         grid-template-columns: 1fr;
       }
 
       .section-copy {
         position: static;
+      }
+
+      .footer-reference-layout {
+        grid-template-columns: 1fr;
+        gap: 36px;
+        padding: 48px 24px;
       }
 
       .mini-gallery,
@@ -621,15 +1246,31 @@ app.innerHTML = `
     @media (max-width: 640px) {
       .nav-wrap {
         align-items: start;
+        flex-direction: column;
       }
 
       .nav-links {
         justify-content: start;
       }
 
+      .tabs-shell,
+      .nav-wrap,
+      .hero,
+      .section {
+        width: min(100%, calc(100% - 20px));
+      }
+
       .hero-badge {
         position: static;
         margin: 16px;
+        max-width: none;
+      }
+
+      .footer-foot {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        text-align: center;
+        gap: 18px;
       }
     }
   </style>
@@ -640,145 +1281,107 @@ app.innerHTML = `
         <span class="brand-name">NM Lap Robes For Veterans</span>
       </div>
       <nav class="nav-links" aria-label="Primary">
-        ${navigation
-          .map((item) =>
-            item.external
-              ? `<a href="${item.href}" target="_blank" rel="noreferrer">${item.label}</a>`
-              : `<a href="${item.href}">${item.label}</a>`,
-          )
-          .join('')}
+        ${navMarkup}
       </nav>
     </div>
   </header>
   <main>
-    <section id="home" class="hero">
-      <div class="hero-card hero-copy">
-        <div class="hero-logo">NM<br />Lap Robes</div>
-        <p class="eyebrow">Hand Crafted Gratitude</p>
-        <h1>Serving veterans across New Mexico</h1>
-        <p>${missionText}</p>
-        <div class="hero-actions">
-          <a class="button button-primary" href="#our-supporters">Support Our Mission</a>
-          <a class="button button-secondary" href="https://www.facebook.com/people/NM-Lap-Robes-for-Veterans/61576165091710/" target="_blank" rel="noreferrer">Visit Our Facebook Page</a>
-        </div>
+    <div class="tabs-shell">
+      <div class="tabs-nav" role="tablist">
+        ${tabTriggerMarkup}
       </div>
-      <div class="hero-card hero-visual">
-        <img src="src/images/info/vet home 1.JPG" alt="Members of NM Lap Robes For Veterans" />
-        <div class="hero-badge">
-          Home page includes a members photo, your vision statement, and quick access to donations and Facebook.
-        </div>
+      <div class="tabs-content">
+        ${tabPanelsMarkup}
       </div>
-    </section>
-    <section class="feature-grid" aria-label="Highlights">
-      <article class="feature-card">
-        <strong>Vision Statement</strong>
-        <span>${missionText}</span>
-      </article>
-      <article class="feature-card">
-        <strong>Newest Veteran Recipients</strong>
-        <span>Featured below on the home page as requested, with a dedicated page section in the navigation.</span>
-      </article>
-      <article class="feature-card">
-        <strong>Donate or Connect</strong>
-        <span>Support NM Lap Robes For Veterans by mailing a check, using your QR code, or reaching out directly.</span>
-      </article>
-    </section>
-    <section id="newest-veteran-recipients" class="section">
-      <div class="section-panel">
-        <div class="section-layout">
-          <div class="section-copy">
-            <p class="eyebrow">Under Home Tab</p>
-            <h2>Newest Veteran Recipients</h2>
-            <p>This section is placed directly under the Home content and is also available from the navigation for easy access.</p>
-            <p>These recent moments highlight the veterans we serve and the branch-specific lap robes made for them.</p>
-          </div>
-          <div class="mini-gallery">
-            ${newestRecipients
-              .map(
-                (item) => `
-                  <figure class="gallery-card">
-                    <img src="${item.src}" alt="${item.alt}" />
-                    <figcaption>${item.caption ?? item.alt}</figcaption>
-                  </figure>
-                `,
-              )
-              .join('')}
-          </div>
-        </div>
-      </div>
-    </section>
-    ${sections
-      .map(
-        (section) => `
-          <section id="${section.id}" class="section">
-            <div class="section-panel">
-              <div class="section-layout">
-                <div class="section-copy">
-                  ${section.eyebrow ? `<p class="eyebrow">${section.eyebrow}</p>` : ''}
-                  <h2>${section.title}</h2>
-                  ${section.body.map((paragraph) => `<p>${paragraph}</p>`).join('')}
-                </div>
-                <div class="gallery">
-                  ${(section.images ?? [])
-                    .map(
-                      (item) => `
-                        <figure class="gallery-card">
-                          <img src="${item.src}" alt="${item.alt}" />
-                          <figcaption>${item.caption ?? item.alt}</figcaption>
-                        </figure>
-                      `,
-                    )
-                    .join('')}
-                </div>
-              </div>
-            </div>
-          </section>
-        `,
-      )
-      .join('')}
+    </div>
   </main>
-  <section class="contact-band" aria-label="Donation and contact information">
-    <div class="contact-grid">
-      <section class="contact-card" aria-label="Support image">
-        <div class="contact-frame">
-          <img class="contact-image" src="src/images/img.png" alt="NM Lap Robes For Veterans donation image" />
-        </div>
-      </section>
-      <section class="contact-card contact-copy" aria-label="Donation instructions">
-        <p>${donationInstructions[0]}</p>
-        <p>${donationInstructions[1]}<br />${donationInstructions[2]}<br />${donationInstructions[3]}</p>
-        <p style="text-align:center;">or go to</p>
-        <p style="text-align:center;">
-          <a class="donation-link" href="https://www.cnbank.com/PLACE/" target="_blank" rel="noreferrer">https://www.cnbank.com/PLACE/</a>
-        </p>
-        <p style="text-align:center;">and choose Lap Robes for Veterans to make your donation.</p>
-      </section>
-      <section class="contact-card" aria-label="Primary contact information">
-        <h2 class="contact-title">Contact Information</h2>
-        <ul class="contact-list">
-          <li>${contactLines[1]}, ${contactLines[2]}</li>
-          <li><a href="mailto:${contactLines[3]}">${contactLines[3]}</a></li>
-          <li><a href="tel:+15056042810">${contactLines[4]}</a></li>
-        </ul>
-      </section>
-    </div>
-  </section>
   <footer class="site-footer">
-    <div class="footer-grid">
-      <section class="footer-card" aria-label="Organization footer details">
-        <h3 class="footer-title">NM Lap Robes For Veterans</h3>
-        <ul class="footer-list">
-          ${donationAddress.map((line) => `<li>${line}</li>`).join('')}
-          <li><a href="tel:+15056042810">(505) 604-2810</a></li>
-          <li><a href="mailto:nmlaprobesforveterans@gmail.com">nmlaprobesforveterans@gmail.com</a></li>
-        </ul>
-      </section>
-      <section class="footer-card" aria-label="Footer note">
-        <h3 class="footer-title">Support Our Mission</h3>
-        <p class="footer-note">Hand-crafted, branch-specific lap robes are provided free to veterans across New Mexico through donations and volunteer work.</p>
-      </section>
-    </div>
-  </footer>
+    ${renderPersistentFooterBand()}
+    <div class="footer-foot">
+      <div class="footer-service">
+        <span class="footer-service-label">Service Provided by</span>
+        <a class="footer-service-link" href="https://www.interserver.net" target="_blank" rel="noreferrer">https://www.interserver.net</a>
+      </div>
+      <span class="footer-copyright">&copy; ${currentYear} NM Lap Robes For Veterans</span>
+      <a class="footer-social" href="${facebookUrl}" target="_blank" rel="noreferrer">
+        <span class="footer-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor" role="presentation">
+              <path d="M14.5 2H18c.55 0 1 .45 1 1v4h-3c-.55 0-1 .45-1 1v3h4l-.56 4H15v6h-4v-6H9v-4h2v-3c0-2.2 
+                1.2-3 3-3h1.5V3z" />
+            </svg>
+          </span>
+          <span class="sr-only">Visit our Facebook page</span>
+        </a>
+      </div>
+    </footer>
 `;
 
 document.body.append(app);
+
+const tabTriggers = Array.from(app.querySelectorAll<HTMLButtonElement>('.tabs-nav [data-tab-target]'));
+const navTabButtons = Array.from(app.querySelectorAll<HTMLButtonElement>('.tab-link'));
+const tabPanels = Array.from(app.querySelectorAll<HTMLElement>('.tab-panel'));
+const allTabButtons = [...tabTriggers, ...navTabButtons];
+const carousels = Array.from(app.querySelectorAll<HTMLElement>('[data-carousel]'));
+
+const setActiveTab = (tabId: string) => {
+  tabPanels.forEach((panel) => {
+    const isActive = panel.dataset.tab === tabId;
+    panel.hidden = !isActive;
+    panel.setAttribute('aria-hidden', (!isActive).toString());
+  });
+
+  allTabButtons.forEach((control) => {
+    const isActive = control.dataset.tabTarget === tabId;
+    control.classList.toggle('is-active', isActive);
+    control.setAttribute('aria-expanded', String(isActive));
+  });
+};
+
+allTabButtons.forEach((control) => {
+  control.addEventListener('click', () => {
+    const targetTab = control.dataset.tabTarget;
+    if (targetTab) {
+      setActiveTab(targetTab);
+    }
+  });
+});
+
+carousels.forEach((carousel) => {
+  const slides = Array.from(carousel.querySelectorAll<HTMLElement>('[data-slide]'));
+  const dots = Array.from(carousel.querySelectorAll<HTMLButtonElement>('[data-carousel-dot]'));
+
+  if (!slides.length) {
+    return;
+  }
+
+  let activeIndex = 0;
+
+  const renderCarousel = (index: number) => {
+    activeIndex = (index + slides.length) % slides.length;
+
+    slides.forEach((slide, slideIndex) => {
+      slide.hidden = slideIndex !== activeIndex;
+    });
+
+    dots.forEach((dot, dotIndex) => {
+      const isActive = dotIndex === activeIndex;
+      dot.classList.toggle('is-active', isActive);
+      dot.setAttribute('aria-selected', String(isActive));
+    });
+  };
+
+  dots.forEach((dot, dotIndex) => {
+    dot.addEventListener('click', () => {
+      renderCarousel(dotIndex);
+    });
+  });
+
+  renderCarousel(0);
+  window.setInterval(() => {
+    renderCarousel(activeIndex + 1);
+  }, 3000);
+});
+
+setActiveTab(tabs[0].id);
+
