@@ -76,12 +76,14 @@ const sections: Section[] = [
   {
     id: 'veteran-recipients',
     title: 'Veteran Recipients',
-    eyebrow: 'Honoring Service',
+    eyebrow: 'Recipients Gallery',
     body: [
       'Each lap robe is created for the veteran receiving it, with branch-specific details that show gratitude for their service.',
       'We deliver lap robes to wheelchair veterans, veterans in assisted living, veterans at the VA, and veterans who are homebound across New Mexico.',
     ],
     images: [
+      { src: 'src/images/vetern_recipients/af wc vet.jpg', alt: 'Air Force wheelchair veteran recipient with lap robe' },
+      { src: 'src/images/vetern_recipients/ben garcia 2.JPG', alt: 'Ben Garcia receiving a lap robe' },
       { src: 'src/images/vetern_recipients/el patron 1.jpg', alt: 'Veteran recipients at an event' },
       { src: 'src/images/vetern_recipients/el patron 2.jpg', alt: 'Veteran recipient receiving a lap robe' },
       { src: 'src/images/vetern_recipients/el patron 3.jpg', alt: 'Volunteer and veteran recipient together' },
@@ -90,15 +92,16 @@ const sections: Section[] = [
       { src: 'src/images/vetern_recipients/fair3.jpg', alt: 'Veteran recipient at a local fair' },
       { src: 'src/images/vetern_recipients/fair4.jpg', alt: 'Veterans and volunteers at outreach event' },
       { src: 'src/images/vetern_recipients/fair5.jpg', alt: 'Veteran recipient community photo' },
+      { src: 'src/images/vetern_recipients/ray bonda 101 years old on July 31st.jpg', alt: 'Ray Bonda celebrating his 101st birthday with a lap robe' },
     ],
   },
   {
     id: 'events',
-    title: 'Events',
-    eyebrow: 'Community Outreach',
+    title: 'Honors',
+    eyebrow: 'Community Honors',
     body: [
-      'We participate in veteran and community events throughout New Mexico to meet supporters, raise awareness, and gather the funding needed to keep making lap robes.',
-      'These booths and local appearances help us connect with donors, volunteers, and veterans who need our support.',
+      'These honors photos highlight community appearances, recognition moments, and outreach events that help celebrate veterans and the mission behind every lap robe.',
+      'They capture the public support and special presentations that continue to raise awareness across New Mexico.',
     ],
     images: [
       { src: 'src/images/honors/honor10.jpg', alt: 'Veteran event booth' },
@@ -245,13 +248,15 @@ const renderEventCarousel = (items: GalleryItem[]) => {
 const renderSectionPanel = (section: Section) => `
   <section id="${section.id}" class="section">
     <div class="section-panel">
-      <div class="section-layout">
+      <div class="section-layout${section.id === 'events' || section.id === 'veteran-recipients' || section.id === 'our-volunteers' || section.id === 'our-supporters' ? ' section-layout--stacked-gallery' : ''}">
         <div class="section-copy">
           ${section.eyebrow ? `<p class="eyebrow">${section.eyebrow}</p>` : ''}
           <h2>${section.title}</h2>
           ${section.body.map((paragraph) => `<p>${paragraph}</p>`).join('')}
         </div>
-        ${section.id === 'events' ? renderEventCarousel(section.images ?? []) : renderGallery(section.images ?? [])}
+        <div class="${section.id === 'events' || section.id === 'veteran-recipients' || section.id === 'our-volunteers' || section.id === 'our-supporters' ? 'stacked-gallery-wrap' : ''}">
+          ${renderGallery(section.images ?? [])}
+        </div>
       </div>
     </div>
   </section>
@@ -263,7 +268,7 @@ const renderHeroPanel = () => `
       <div class="hero-logo-wrap">
         <img src="src/images/Logo.jpg" alt="NM Lap Robes For Veterans logo" class="hero-logo-image" />
       </div>
-      <p class="eyebrow">Hand Crafted Gratitude For New Mexico Veterans</p>
+      <p class="eyebrow">Hand Crafted Gratitude For<br />New Mexico Veterans</p>
       <h1>Comfort, dignity, and gratitude for veterans across New Mexico</h1>
       <p>${missionText}</p>
       <div class="hero-actions">
@@ -271,11 +276,10 @@ const renderHeroPanel = () => `
         <a class="button button-secondary" href="https://www.facebook.com/people/NM-Lap-Robes-for-Veterans/61576165091710/" target="_blank" rel="noreferrer">Visit Our Facebook Page</a>
       </div>
     </div>
-    <div class="hero-card hero-visual">
+  </section>
+  <section class="hero-media hero-home-media">
+    <div class="hero-card hero-visual hero-visual--standalone">
       <img src="src/images/info/vet home 1.JPG" alt="Members of NM Lap Robes For Veterans" />
-      <div class="hero-badge">
-        Use the large tabs below to view recipients, events, volunteer work, supporters, and contact information.
-      </div>
     </div>
   </section>
 `;
@@ -436,14 +440,13 @@ const tabs = [
     label: 'Recipients',
     description: 'Veteran galleries',
     content: `
-      ${renderRecipientsIntro()}
       ${renderSectionPanel(sectionMap['veteran-recipients'])}
     `,
   },
   {
     id: 'events',
-    label: 'Events',
-    description: 'Community outreach',
+    label: 'Honors',
+    description: 'Recognition gallery',
     content: `
       ${renderSectionPanel(sectionMap['events'])}
     `,
@@ -730,6 +733,17 @@ app.innerHTML = `
       align-items: stretch;
     }
 
+    .hero-home {
+      grid-template-columns: minmax(0, 1fr);
+      padding-bottom: 16px;
+    }
+
+    .hero-media {
+      width: var(--content-width);
+      margin: 0 auto;
+      padding-bottom: 24px;
+    }
+
     .hero-card,
     .feature-card,
     .section-panel,
@@ -745,8 +759,8 @@ app.innerHTML = `
     }
 
     .hero-logo-wrap {
-      width: min(100%, 420px);
-      margin-bottom: 20px;
+      width: min(100%, 860px);
+      margin: 0 auto 20px;
       padding: 14px;
       border-radius: 24px;
       background: #fff;
@@ -756,9 +770,9 @@ app.innerHTML = `
 
     .hero-logo-image {
       width: 100%;
+      max-height: 320px;
       height: auto;
       display: block;
-      object-fit: contain;
       border-radius: 16px;
     }
 
@@ -769,6 +783,7 @@ app.innerHTML = `
       letter-spacing: 0.12em;
       font-size: 0.88rem;
       font-weight: 700;
+      text-align: center;
     }
 
     h1,
@@ -779,7 +794,6 @@ app.innerHTML = `
 
     h1 {
       font-size: clamp(2.3rem, 4.8vw, 4.2rem);
-      max-width: 14ch;
     }
 
     h2 {
@@ -836,6 +850,10 @@ app.innerHTML = `
       height: 100%;
       object-fit: cover;
       display: block;
+    }
+
+    .hero-visual--standalone img {
+      aspect-ratio: 16 / 9;
     }
 
     .hero-badge {
@@ -978,11 +996,30 @@ app.innerHTML = `
       position: static;
     }
 
+    .section-layout--stacked-gallery {
+      grid-template-columns: 1fr;
+      gap: 26px;
+    }
+
+    .stacked-gallery-wrap {
+      width: 100%;
+    }
+
     .gallery {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 16px;
       align-items: start;
+    }
+
+    .section-layout--stacked-gallery .gallery {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      grid-auto-rows: minmax(140px, auto);
+      gap: 18px;
+    }
+
+    .section-layout--stacked-gallery .gallery-card {
+      grid-column: span 4;
     }
 
     .gallery-card {
@@ -996,7 +1033,7 @@ app.innerHTML = `
     .gallery-card img {
       width: 100%;
       aspect-ratio: 4 / 3;
-      object-fit: cover;
+      object-fit: fill;
       display: block;
     }
 
@@ -1005,6 +1042,27 @@ app.innerHTML = `
       font-size: 1rem;
       color: rgba(31, 35, 40, 0.82);
       line-height: 1.5;
+    }
+
+    .section-layout--stacked-gallery .gallery-card:nth-child(1) {
+      grid-column: span 7;
+      grid-row: span 2;
+    }
+
+    .section-layout--stacked-gallery .gallery-card:nth-child(2) {
+      grid-column: span 5;
+      grid-row: span 2;
+    }
+
+    .section-layout--stacked-gallery .gallery-card:nth-child(3),
+    .section-layout--stacked-gallery .gallery-card:nth-child(4),
+    .section-layout--stacked-gallery .gallery-card:nth-child(5) {
+      grid-column: span 4;
+    }
+
+    .section-layout--stacked-gallery .gallery-card img {
+      height: 100%;
+      min-height: 220px;
     }
 
     .event-carousel {
@@ -1401,6 +1459,19 @@ app.innerHTML = `
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
+      .section-layout--stacked-gallery .gallery {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .section-layout--stacked-gallery .gallery-card:nth-child(1),
+      .section-layout--stacked-gallery .gallery-card:nth-child(2),
+      .section-layout--stacked-gallery .gallery-card:nth-child(3),
+      .section-layout--stacked-gallery .gallery-card:nth-child(4),
+      .section-layout--stacked-gallery .gallery-card:nth-child(5) {
+        grid-column: auto;
+        grid-row: auto;
+      }
+
       .donation-layout {
         grid-template-columns: 1fr;
       }
@@ -1491,6 +1562,10 @@ app.innerHTML = `
       .feature-grid,
       .mini-gallery,
       .gallery {
+        grid-template-columns: 1fr;
+      }
+
+      .section-layout--stacked-gallery .gallery {
         grid-template-columns: 1fr;
       }
 
