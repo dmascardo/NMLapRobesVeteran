@@ -173,6 +173,9 @@ const donationInstructions = [
   'Albuquerque, NM, United States, New Mexico',
 ];
 
+const donationQrImage = 'src/images/donation-qr.png';
+const contactSupportImage = 'src/images/contact-support.png';
+
 const currentYear = new Date().getFullYear();
 
 const sectionMap = sections.reduce<Record<string, Section>>((acc, section) => {
@@ -325,21 +328,47 @@ const sanitizePhone = (value: string) => value.replace(/[^\d+]/g, '');
 const renderContactTab = () => `
   <section class="section">
     <div class="section-panel">
-      <div class="footer-grid">
-        <section class="footer-card" aria-label="Organization footer details">
-          <h3 class="footer-title">NM Lap Robes For Veterans</h3>
-          <ul class="footer-list">
+      <div class="contact-page-grid">
+        <section class="contact-page-card" aria-label="Organization contact details">
+          <h3 class="footer-title">Contact Information</h3>
+          <ul class="footer-list contact-page-list">
+            <li><strong>NM Lap Robes For Veterans</strong></li>
             ${donationAddress.map((line) => `<li>${line}</li>`).join('')}
             <li><a href="tel:+15053559801">(505) 355-9801</a></li>
             <li><a href="mailto:nmlaprobesforveterans@gmail.com">nmlaprobesforveterans@gmail.com</a></li>
           </ul>
         </section>
-        <section class="footer-card" aria-label="Footer note">
+        <section class="contact-page-card" aria-label="Support mission details">
           <h3 class="footer-title">Support Our Mission</h3>
-          <p class="footer-note">
+          <p class="footer-note contact-page-note">
             Hand-crafted, branch-specific lap robes are provided free to veterans across New Mexico through donations and volunteer work.
           </p>
+          <img class="contact-page-image" src="${contactSupportImage}" alt="QR code image for supporting NM Lap Robes For Veterans" />
         </section>
+      </div>
+    </div>
+  </section>
+`;
+
+const renderDonationTab = () => `
+  <section class="section">
+    <div class="section-panel">
+      <div class="section-layout donation-layout">
+        <div class="section-copy donation-copy">
+          <p class="eyebrow">Donation Options</p>
+          <h2>Support NM Lap Robes For Veterans</h2>
+          <p>Your donation helps purchase materials so volunteers can continue creating branch-specific lap robes for veterans across New Mexico.</p>
+          <p>Use the QR codes in the image for Venmo, Cash App, Zelle, or PayPal, or mail a check to the address below.</p>
+          <ul class="footer-list donation-mailing-list">
+            ${donationAddress.map((line) => `<li>${line}</li>`).join('')}
+          </ul>
+          <p class="donation-panel-note">
+            Checks should be payable to <strong>NM Lap Robes For Veterans</strong>.
+          </p>
+        </div>
+        <figure class="donation-poster-card">
+          <img src="${donationQrImage}" alt="Donation poster with QR codes for Venmo, Cash App, Zelle, and PayPal" class="donation-poster-image" />
+        </figure>
       </div>
     </div>
   </section>
@@ -436,6 +465,14 @@ const tabs = [
     `,
   },
   {
+    id: 'donation',
+    label: 'Donation',
+    description: 'Ways to give',
+    content: `
+      ${renderDonationTab()}
+    `,
+  },
+  {
     id: 'contact',
     label: 'Contact',
     description: 'Donate or reach out',
@@ -495,10 +532,12 @@ app.innerHTML = `
       --navy: #264653;
       --line: rgba(31, 35, 40, 0.12);
       --shadow: 0 18px 40px rgba(31, 35, 40, 0.12);
+      --page-width: min(1200px, calc(100% - 32px));
+      --content-width: min(1180px, calc(100% - 32px));
     }
 
     .tabs-shell {
-      width: min(1200px, calc(100% - 32px));
+      width: var(--page-width);
       margin: 0 auto;
       padding: 24px 0 40px;
       display: flex;
@@ -508,8 +547,12 @@ app.innerHTML = `
 
     .tabs-nav {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 14px;
+      grid-template-columns: repeat(${tabs.length}, minmax(0, 1fr));
+      gap: 10px;
+      align-items: stretch;
+      overflow-x: auto;
+      scrollbar-width: thin;
+      scroll-snap-type: x proximity;
     }
 
     .tabs-content {
@@ -521,35 +564,37 @@ app.innerHTML = `
     .tab-trigger,
     .tab-link {
       font-family: inherit;
-      font-size: 1.02rem;
+      font-size: 0.92rem;
       background: rgba(255, 255, 255, 0.96);
       border: 2px solid rgba(31, 35, 40, 0.16);
-      border-radius: 22px;
-      padding: 14px 18px;
+      border-radius: 18px;
+      padding: 12px 12px;
       cursor: pointer;
       transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
+      scroll-snap-align: start;
     }
 
     .tab-trigger {
       flex-direction: column;
-      gap: 4px;
-      min-height: 104px;
+      gap: 3px;
+      min-height: 86px;
       text-align: center;
     }
 
     .tab-trigger span {
       font-weight: 700;
-      font-size: 1.06rem;
+      font-size: 0.92rem;
     }
 
     .tab-trigger small {
-      font-size: 0.82rem;
+      font-size: 0.72rem;
       opacity: 0.82;
       letter-spacing: 0.02em;
+      line-height: 1.25;
     }
 
     .tab-link {
@@ -621,7 +666,7 @@ app.innerHTML = `
     .nav-wrap,
     .hero,
     .section {
-      width: min(1180px, calc(100% - 32px));
+      width: var(--content-width);
       margin: 0 auto;
     }
     .nav-wrap {
@@ -807,7 +852,7 @@ app.innerHTML = `
     }
 
     .feature-grid {
-      width: min(1180px, calc(100% - 32px));
+      width: var(--content-width);
       margin: 0 auto;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -832,11 +877,11 @@ app.innerHTML = `
     }
 
     .section {
-      padding: clamp(36px, 6vw, 72px) 0;
+      padding: clamp(36px, 0vw, 72px) 0;
     }
 
     .section-panel {
-      width: min(1200px, calc(100% - 32px));
+      width: 100%;
       margin: 0 auto;
       padding: clamp(28px, 4vw, 42px);
       background: rgba(255, 252, 247, 0.97);
@@ -852,6 +897,83 @@ app.innerHTML = `
       align-items: stretch;
     }
 
+    .contact-page-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .contact-page-card {
+      padding: 28px 30px;
+      border-radius: 24px;
+      background: #fff;
+      border: 1px solid rgba(31, 35, 40, 0.08);
+      box-shadow: 0 12px 28px rgba(31, 35, 40, 0.08);
+    }
+
+    .contact-page-list li strong {
+      font-size: 1.08rem;
+      font-weight: 700;
+    }
+
+    .contact-page-note {
+      max-width: 44ch;
+      margin: 0;
+    }
+
+    .contact-page-image {
+      width: min(100%, 220px);
+      margin: 18px auto 0;
+      display: block;
+      border-radius: 16px;
+      border: 1px solid rgba(31, 35, 40, 0.1);
+      background: #fff;
+    }
+
+    .donation-layout {
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
+      align-items: center;
+    }
+
+    .donation-copy {
+      display: grid;
+      gap: 16px;
+    }
+
+    .donation-copy p {
+      margin: 0;
+    }
+
+    .donation-mailing-list {
+      padding: 18px 20px;
+      border-radius: 20px;
+      background: rgba(38, 70, 83, 0.06);
+      border: 1px solid rgba(38, 70, 83, 0.12);
+    }
+
+    .donation-panel-note {
+      font-size: 0.98rem;
+      line-height: 1.7;
+    }
+
+    .donation-poster-card {
+      margin: 0;
+      padding: 18px;
+      border-radius: 26px;
+      background: #fff;
+      border: 1px solid rgba(31, 35, 40, 0.08);
+      box-shadow: 0 18px 40px rgba(31, 35, 40, 0.12);
+    }
+
+    .donation-poster-image {
+      width: 100%;
+      display: block;
+      border-radius: 18px;
+      object-fit: contain;
+      background: #fff;
+    }
+
     .section-copy {
       position: static;
     }
@@ -860,7 +982,7 @@ app.innerHTML = `
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 16px;
-      align-items:start;
+      align-items: start;
     }
 
     .gallery-card {
@@ -1003,6 +1125,8 @@ app.innerHTML = `
       font-size: clamp(1rem, 1.55vw, 1.14rem);
       line-height: 1.65;
       font-weight: 400;
+      margin-left: 0;
+      word-break: break-word;
     }
 
     .contact-list li + li,
@@ -1048,15 +1172,20 @@ app.innerHTML = `
       width: min(1680px, calc(100% - 70px));
       display: grid;
       grid-template-columns: 0.9fr 1fr 1fr;
-      gap: 64px;
+      gap: 40px;
       align-items: start;
-      padding: 72px 32px 76px;
+      padding: 24px 24px 28px;
     }
 
     .footer-visual-block,
     .footer-copy-block,
     .footer-contact-block {
       min-width: 0;
+    }
+
+    .footer-visual-block {
+      display: flex;
+      justify-content: center;
     }
 
     .footer-image-frame {
@@ -1078,10 +1207,10 @@ app.innerHTML = `
     }
 
     .contact-copy {
-      font-size: clamp(1.1rem, 1.8vw, 1.45rem);
-      line-height: 1.45;
-      color: #fff;
-      margin: 0 0 18px;
+      font-size: clamp(0.92rem, 1.3vw, 1.08rem);
+      line-height: 1.35;
+      color: #000;
+      margin: 0 0 12px;
       font-weight: 400;
       max-width: 24ch;
     }
@@ -1089,20 +1218,20 @@ app.innerHTML = `
     .contact-list--donation li,
     .contact-list--info li,
     .footer-volunteer {
-      font-size: clamp(1rem, 1.55vw, 1.28rem);
-      line-height: 1.45;
+      font-size: clamp(0.9rem, 1.15vw, 1rem);
+      line-height: 1.35;
       font-weight: 400;
-      color: #fff;
+      color: #000;
     }
 
     .contact-list--donation li + li,
     .contact-list--info li + li {
-      margin-top: 4px;
+      margin-top: 2px;
     }
 
     .contact-note {
-      color: #fff;
-      margin: 14px 0 0;
+      color: #000;
+      margin: 10px 0 0;
     }
 
     .contact-note--center,
@@ -1120,20 +1249,20 @@ app.innerHTML = `
     }
 
     .footer-contact-block {
-      padding-top: 6px;
+      padding-top: 0;
     }
 
     .footer-heading {
-      margin: 0 0 18px;
-      font-size: clamp(2rem, 3vw, 2.7rem);
-      line-height: 1.1;
-      color: #fff;
+      margin: 0 0 12px;
+      font-size: clamp(1.5rem, 2vw, 1.95rem);
+      line-height: 1.05;
+      color: #000;
       font-weight: 400;
     }
 
     .footer-heading--secondary {
-      margin-top: 28px;
-      font-size: clamp(1.8rem, 2.7vw, 2.35rem);
+      margin-top: 18px;
+      font-size: clamp(1.35rem, 1.8vw, 1.75rem);
     }
 
     .footer-volunteer {
@@ -1142,7 +1271,7 @@ app.innerHTML = `
 
     .footer-volunteer a,
     .contact-list--info a {
-      color: #fff;
+      color: #000;
       text-decoration: none;
       font-weight: 400;
     }
@@ -1153,7 +1282,7 @@ app.innerHTML = `
       grid-template-columns: 1fr auto 1fr;
       align-items: center;
       gap: 24px;
-      padding: 18px 44px;
+      padding: 2px 0px;
       background: #020202;
       color: #fff;
       font-size: 0.9rem;
@@ -1221,9 +1350,58 @@ app.innerHTML = `
     }
 
     @media (max-width: 960px) {
+      .tabs-nav {
+        grid-template-columns: repeat(${tabs.length}, minmax(140px, 1fr));
+        padding-bottom: 6px;
+      }
+
       .hero,
       .section-layout,
-      .feature-grid {
+      .feature-grid,
+      .contact-page-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .tabs-shell {
+        padding: 18px 0 32px;
+        gap: 18px;
+      }
+
+      .tab-trigger {
+        min-height: 78px;
+      }
+
+      .nav-wrap {
+        padding: 14px 0;
+      }
+
+      .hero {
+        gap: 18px;
+      }
+
+      .hero-copy {
+        padding: 28px;
+      }
+
+      .section {
+        padding: 24px 0;
+      }
+
+      .section-panel,
+      .contact-page-card {
+        padding: 24px;
+      }
+
+      .feature-card {
+        padding: 22px;
+      }
+
+      .mini-gallery,
+      .gallery {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .donation-layout {
         grid-template-columns: 1fr;
       }
 
@@ -1233,37 +1411,120 @@ app.innerHTML = `
 
       .footer-reference-layout {
         grid-template-columns: 1fr;
-        gap: 36px;
-        padding: 48px 24px;
-      }
-
-      .mini-gallery,
-      .gallery {
-        grid-template-columns: 1fr;
+        gap: 28px;
+        padding: 28px 24px 24px;
       }
     }
 
     @media (max-width: 640px) {
+      :root {
+        --page-width: min(100%, calc(100% - 20px));
+        --content-width: min(100%, calc(100% - 20px));
+      }
+
       .nav-wrap {
         align-items: start;
         flex-direction: column;
+        gap: 14px;
       }
 
       .nav-links {
         justify-content: start;
+        width: 100%;
       }
 
-      .tabs-shell,
-      .nav-wrap,
-      .hero,
-      .section {
-        width: min(100%, calc(100% - 20px));
+      .nav-links a,
+      .nav-links button {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .tabs-shell {
+        padding: 16px 0 28px;
+      }
+
+      .tabs-nav {
+        grid-template-columns: repeat(${tabs.length}, minmax(132px, 1fr));
+        gap: 8px;
+      }
+
+      .tab-trigger,
+      .tab-link {
+        padding: 10px;
+        border-radius: 16px;
+      }
+
+      .tab-trigger {
+        min-height: 72px;
+      }
+
+      .tab-trigger span {
+        font-size: 0.88rem;
+      }
+
+      .tab-trigger small {
+        font-size: 0.68rem;
+      }
+
+      .hero-copy {
+        padding: 22px;
+      }
+
+      .hero-actions,
+      .button {
+        width: 100%;
+      }
+
+      .button {
+        min-height: 48px;
+      }
+
+      h1 {
+        max-width: none;
+        font-size: clamp(1.9rem, 9vw, 2.8rem);
+      }
+
+      h2 {
+        font-size: clamp(1.5rem, 7vw, 2.1rem);
+      }
+
+      .feature-grid,
+      .mini-gallery,
+      .gallery {
+        grid-template-columns: 1fr;
+      }
+
+      .section-panel,
+      .contact-page-card {
+        padding: 20px;
+        border-radius: 24px;
+      }
+
+      .contact-page-image,
+      .donation-poster-image,
+      .contact-image {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .footer-reference-layout {
+        width: min(100%, calc(100% - 24px));
+        padding: 22px 16px 20px;
+        gap: 22px;
       }
 
       .hero-badge {
         position: static;
-        margin: 16px;
+        margin: 0;
         max-width: none;
+      }
+
+      .footer-heading {
+        font-size: clamp(1.3rem, 7vw, 1.7rem);
+      }
+
+      .footer-heading--secondary {
+        font-size: clamp(1.15rem, 6vw, 1.45rem);
       }
 
       .footer-foot {
@@ -1271,6 +1532,7 @@ app.innerHTML = `
         justify-items: center;
         text-align: center;
         gap: 18px;
+        padding: 12px 16px;
       }
     }
   </style>
@@ -1295,16 +1557,12 @@ app.innerHTML = `
       </div>
     </div>
   </main>
-  <footer class="site-footer">
-    ${renderPersistentFooterBand()}
-    <div class="footer-foot">
-      <div class="footer-service">
-        <span class="footer-service-label">Service Provided by</span>
-        <a class="footer-service-link" href="https://www.interserver.net" target="_blank" rel="noreferrer">https://www.interserver.net</a>
-      </div>
-      <span class="footer-copyright">&copy; ${currentYear} NM Lap Robes For Veterans</span>
-      <a class="footer-social" href="${facebookUrl}" target="_blank" rel="noreferrer">
-        <span class="footer-icon" aria-hidden="true">
+        <footer class="site-footer">
+          ${renderPersistentFooterBand()}
+          <div class="footer-foot">
+            <span class="footer-copyright">&copy; ${currentYear} NM Lap Robes For Veterans</span>
+            <a class="footer-social" href="${facebookUrl}" target="_blank" rel="noreferrer">
+              <span class="footer-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="currentColor" role="presentation">
               <path d="M14.5 2H18c.55 0 1 .45 1 1v4h-3c-.55 0-1 .45-1 1v3h4l-.56 4H15v6h-4v-6H9v-4h2v-3c0-2.2 
                 1.2-3 3-3h1.5V3z" />
