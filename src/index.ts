@@ -22,12 +22,12 @@ type NavigationItem = {
 const facebookUrl = 'https://www.facebook.com/people/NM-Lap-Robes-for-Veterans/61576165091710/';
 
 const navigation: NavigationItem[] = [
-/*  { label: 'Home', tabId: 'home' },
-  { label: 'Recipients', tabId: 'recipients' },
-  { label: 'Events', tabId: 'events' },
-  { label: 'Volunteers', tabId: 'volunteers' },
-  { label: 'Supporters', tabId: 'supporters' },
-  { label: 'Contact', tabId: 'contact' },*/
+  /*  { label: 'Home', tabId: 'home' },
+    { label: 'Recipients', tabId: 'recipients' },
+    { label: 'Events', tabId: 'events' },
+    { label: 'Volunteers', tabId: 'volunteers' },
+    { label: 'Supporters', tabId: 'supporters' },
+    { label: 'Contact', tabId: 'contact' },*/
   {
     label: 'Visit Our Facebook Page',
     href: facebookUrl,
@@ -152,8 +152,36 @@ const sections: Section[] = [
   },
 ];
 
+const supporterNames = [
+  'Parnall Law Firm',
+  'Thunderbird Harley Davidson',
+  'Stuck Lizard Vineyards',
+  'KKOB radio personality Brandon Vogt',
+  'KKOB personality Eric Straus',
+  'Randy Coffing',
+  'William Martinez',
+  'Patricia Jacobs',
+  'Anthony Stout',
+  'Mechell Rose',
+  'Deborah Webster',
+  'Gerald Heater',
+  'Kathleen Sanchez',
+  'Genaro Padilla',
+  'Terri Swanson',
+  'John Garcia',
+  'Frank Chavez',
+  'Patricia W. Pickett',
+  'Adam Ramirez',
+  'Wagner Dental Group',
+  'El Patron Restaurant',
+  'Corrales Electric',
+  'Two Maids',
+  'Safety Flare Company',
+  'Advantage Automotive',
+];
+
 const missionText =
-  'Our vision is to ensure all wheelchair, bedridden and nursing home veterans in New Mexico to understand our gratitude for their service to this country with a hand crafted branch specific lap robe.';
+    'Our vision is to ensure all wheelchair, bedridden and nursing home veterans in New Mexico to understand our gratitude for their service to this country with a hand crafted branch specific lap robe.';
 
 const donationAddress = [
   'NM Lap Robes For Veterans',
@@ -194,15 +222,15 @@ const renderGallery = (items: GalleryItem[]) => {
   return `
     <div class="gallery">
       ${items
-        .map(
+      .map(
           (item) => `
             <figure class="gallery-card">
               <img src="${item.src}" alt="${item.alt}" />
               <figcaption>${item.caption ?? item.alt}</figcaption>
             </figure>
           `,
-        )
-        .join('')}
+      )
+      .join('')}
     </div>
   `;
 };
@@ -216,20 +244,20 @@ const renderEventCarousel = (items: GalleryItem[]) => {
     <div class="event-carousel" data-carousel>
       <div class="event-carousel-track">
         ${items
-          .map(
-            (item, index) => `
+      .map(
+          (item, index) => `
               <figure class="gallery-card event-slide" data-slide="${index}" ${index === 0 ? '' : 'hidden'}>
                 <img src="${item.src}" alt="${item.alt}" />
                 <figcaption>${item.caption ?? item.alt}</figcaption>
               </figure>
             `,
-          )
-          .join('')}
+      )
+      .join('')}
       </div>
       <div class="event-carousel-dots" role="tablist" aria-label="Event images">
         ${items
-          .map(
-            (_, index) => `
+      .map(
+          (_, index) => `
               <button
                 type="button"
                 class="carousel-dot${index === 0 ? ' is-active' : ''}"
@@ -238,29 +266,47 @@ const renderEventCarousel = (items: GalleryItem[]) => {
                 aria-selected="${index === 0 ? 'true' : 'false'}"
               ></button>
             `,
-          )
-          .join('')}
+      )
+      .join('')}
       </div>
     </div>
   `;
 };
 
-const renderSectionPanel = (section: Section) => `
-  <section id="${section.id}" class="section">
-    <div class="section-panel">
-      <div class="section-layout${section.id === 'events' || section.id === 'veteran-recipients' || section.id === 'our-volunteers' || section.id === 'our-supporters' ? ' section-layout--stacked-gallery' : ''}">
-        <div class="section-copy">
-          ${section.eyebrow ? `<p class="eyebrow">${section.eyebrow}</p>` : ''}
-          <h2>${section.title}</h2>
-          ${section.body.map((paragraph) => `<p>${paragraph}</p>`).join('')}
-        </div>
-        <div class="${section.id === 'events' || section.id === 'veteran-recipients' || section.id === 'our-volunteers' || section.id === 'our-supporters' ? 'stacked-gallery-wrap' : ''}">
-          ${renderGallery(section.images ?? [])}
+const renderSupporterNames = () => `
+  <div class="supporter-names-block">
+    <p class="supporter-names-intro">
+      As a non profit without our supporters we would not be able to provide lap robes to deserving veterans. Any contributions at our fundraisers are truly appreciated. Here is a list of our supporters who have donated the cost of a lap robe(s) to be made for our veterans.
+    </p>
+    <h3 class="supporter-names-title">Supporter Names</h3>
+    <ul class="supporter-names-grid">
+      ${supporterNames.map((name) => `<li>${name}</li>`).join('')}
+    </ul>
+  </div>
+`;
+
+const renderSectionPanel = (section: Section) => {
+  const isStackedGallerySection =
+      section.id === 'events' || section.id === 'veteran-recipients' || section.id === 'our-volunteers' || section.id === 'our-supporters';
+
+  return `
+    <section id="${section.id}" class="section">
+      <div class="section-panel">
+        <div class="section-layout${isStackedGallerySection ? ' section-layout--stacked-gallery' : ''}">
+          <div class="section-copy">
+            ${section.eyebrow ? `<p class="eyebrow">${section.eyebrow}</p>` : ''}
+            <h2>${section.title}</h2>
+            ${section.body.map((paragraph) => `<p>${paragraph}</p>`).join('')}
+          </div>
+          <div class="${isStackedGallerySection ? 'stacked-gallery-wrap' : ''}">
+            ${renderGallery(section.images ?? [])}
+            ${section.id === 'our-supporters' ? renderSupporterNames() : ''}
+          </div>
         </div>
       </div>
-    </div>
-  </section>
-`;
+    </section>
+  `;
+};
 
 const renderHeroPanel = () => `
    <section class="hero hero-home">
@@ -312,15 +358,15 @@ const renderRecipientsIntro = () => `
         </div>
         <div class="mini-gallery">
           ${newestRecipients
-            .map(
-              (item) => `
+    .map(
+        (item) => `
                 <figure class="gallery-card">
                   <img src="${item.src}" alt="${item.alt}" />
                   <figcaption>${item.caption ?? item.alt}</figcaption>
                 </figure>
               `,
-            )
-            .join('')}
+    )
+    .join('')}
         </div>
       </div>
     </div>
@@ -383,14 +429,14 @@ const renderPersistentFooterBand = () => {
   const contactPhone = contactLines[4] ?? '';
   const emailHref = contactEmail ? `mailto:${contactEmail}` : '#';
   const phoneHref = contactPhone ? `tel:${sanitizePhone(contactPhone)}` : '#';
-  const donationLink = 'https://www.cnbank.com/PLACE/';
+  const donationLink = contactSupportImage;
 
   return `
     <section class="contact-band" aria-label="Donation and contact information">
       <div class="footer-reference-layout">
         <div class="footer-visual-block" aria-label="Lap robe image">
           <div class="footer-image-frame">
-            <img class="contact-image" src="src/images/img.png" alt="Lap robes ready for delivery" />
+            <img class="contact-image" src="src/images/footer_logo.jpeg" alt="Lap robes ready for delivery" />
           </div>
         </div>
         <div class="footer-copy-block" aria-label="Donation information">
@@ -401,7 +447,7 @@ const renderPersistentFooterBand = () => {
           <p class="contact-note contact-note--center">or go to</p>
           <p class="contact-note contact-note--center">
             <a class="donation-link" href="${donationLink}" target="_blank" rel="noreferrer">
-              https://www.cnbank.com/PLACE/
+              <img src="${contactSupportImage}" alt="Support NM Lap Robes For Veterans" class="donation-link-image" />
             </a>
           </p>
           <p class="contact-note contact-note--center">
@@ -486,39 +532,39 @@ const tabs = [
 ];
 
 const tabTriggerMarkup = tabs
-  .map(
-    (tab) => `
+    .map(
+        (tab) => `
       <button type="button" class="tab-trigger" data-tab-target="${tab.id}" aria-controls="tab-${tab.id}" role="tab">
         <span>${tab.label}</span>
         <small>${tab.description}</small>
       </button>
     `,
-  )
-  .join('');
+    )
+    .join('');
 
 const tabPanelsMarkup = tabs
-  .map(
-    (tab) => `
+    .map(
+        (tab) => `
       <section id="tab-${tab.id}" class="tab-panel" data-tab="${tab.id}" role="tabpanel" hidden>
         ${tab.content}
       </section>
     `,
-  )
-  .join('');
+    )
+    .join('');
 
 const navMarkup = navigation
-  .map((item) => {
-    if (item.external) {
-      return `<a href="${item.href}" target="_blank" rel="noreferrer">${item.label}</a>`;
-    }
+    .map((item) => {
+      if (item.external) {
+        return `<a href="${item.href}" target="_blank" rel="noreferrer">${item.label}</a>`;
+      }
 
-    if (!item.tabId) {
-      return '';
-    }
+      if (!item.tabId) {
+        return '';
+      }
 
-    return `<button type="button" class="tab-link" data-tab-target="${item.tabId}" aria-controls="tab-${item.tabId}">${item.label}</button>`;
-  })
-  .join('');
+      return `<button type="button" class="tab-link" data-tab-target="${item.tabId}" aria-controls="tab-${item.tabId}">${item.label}</button>`;
+    })
+    .join('');
 
 const app = document.createElement('div');
 app.className = 'app-shell';
@@ -1032,7 +1078,7 @@ app.innerHTML = `
 
     .gallery-card img {
       width: 100%;
-      aspect-ratio: 4 / 3;
+      /*aspect-ratio: 4 / 3;*/
       object-fit: fill;
       display: block;
     }
@@ -1069,6 +1115,53 @@ app.innerHTML = `
       display: grid;
       gap: 16px;
       align-content: start;
+    }
+
+    .supporter-names-block {
+      margin-top: 22px;
+      padding: 22px;
+      background: #fff;
+      border: 1px solid rgba(31, 35, 40, 0.08);
+      border-radius: 20px;
+    }
+
+    .supporter-names-title {
+      margin: 0 0 12px;
+      font-size: clamp(1.2rem, 2vw, 1.55rem);
+    }
+
+    .supporter-names-intro {
+      margin: 0 0 14px;
+      font-size: 1rem;
+      line-height: 1.7;
+      color: rgba(31, 35, 40, 0.92);
+    }
+
+    .supporter-names-grid {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px 22px;
+    }
+
+    .supporter-names-grid li {
+      position: relative;
+      padding-left: 22px;
+      font-size: 1rem;
+      line-height: 1.6;
+      font-weight: 600;
+    }
+
+    .supporter-names-grid li::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: var(--navy);
+      font-size: 1.1rem;
+      line-height: 1.6;
     }
 
     .event-carousel-track {
@@ -1121,6 +1214,7 @@ app.innerHTML = `
     }
 
     .contact-band {
+      width: 100%;
       padding: 14px 0 10px;
       background: #c4c8cc;
     }
@@ -1165,6 +1259,16 @@ app.innerHTML = `
       word-break: break-word;
     }
 
+    .donation-link-image {
+      display: block;
+      width: min(100%, 220px);
+      height: auto;
+      margin: 0 auto;
+      border-radius: 14px;
+      border: 1px solid rgba(31, 35, 40, 0.12);
+      background: #fff;
+    }
+
     .contact-note {
       text-align: left;
       color: #111;
@@ -1174,7 +1278,7 @@ app.innerHTML = `
     .contact-list,
     .footer-list {
       list-style: none;
-      padding: 0;
+      padding: 2px;
       margin: 0;
     }
 
@@ -1463,6 +1567,11 @@ app.innerHTML = `
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
+      .section-layout--stacked-gallery .gallery-card {
+        grid-column: auto;
+        grid-row: auto;
+      }
+
       .section-layout--stacked-gallery .gallery-card:nth-child(1),
       .section-layout--stacked-gallery .gallery-card:nth-child(2),
       .section-layout--stacked-gallery .gallery-card:nth-child(3),
@@ -1478,6 +1587,10 @@ app.innerHTML = `
 
       .section-copy {
         position: static;
+      }
+
+      .supporter-names-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
       .footer-reference-layout {
@@ -1569,10 +1682,19 @@ app.innerHTML = `
         grid-template-columns: 1fr;
       }
 
+      .section-layout--stacked-gallery .gallery-card {
+        grid-column: auto;
+        grid-row: auto;
+      }
+
       .section-panel,
       .contact-page-card {
         padding: 20px;
         border-radius: 24px;
+      }
+
+      .supporter-names-grid {
+        grid-template-columns: 1fr;
       }
 
       .contact-page-image,
