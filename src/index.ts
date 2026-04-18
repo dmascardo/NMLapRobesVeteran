@@ -22,12 +22,12 @@ type NavigationItem = {
 const facebookUrl = 'https://www.facebook.com/people/NM-Lap-Robes-for-Veterans/61576165091710/';
 
 const navigation: NavigationItem[] = [
-  /*  { label: 'Home', tabId: 'home' },
-    { label: 'Recipients', tabId: 'recipients' },
-    { label: 'Events', tabId: 'events' },
-    { label: 'Volunteers', tabId: 'volunteers' },
-    { label: 'Supporters', tabId: 'supporters' },
-    { label: 'Contact', tabId: 'contact' },*/
+/*  { label: 'Home', tabId: 'home' },
+  { label: 'Recipients', tabId: 'recipients' },
+  { label: 'Events', tabId: 'events' },
+  { label: 'Volunteers', tabId: 'volunteers' },
+  { label: 'Supporters', tabId: 'supporters' },
+  { label: 'Contact', tabId: 'contact' },*/
   {
     label: 'Visit Our Facebook Page',
     href: facebookUrl,
@@ -112,6 +112,8 @@ const sections: Section[] = [
       { src: 'src/images/honors/honor6.jpg', alt: 'Event table display' },
       { src: 'src/images/honors/honor9.jpg', alt: 'Veteran community presentation' },
       { src: 'src/images/honors/honorflt.jpg', alt: 'Honor flight related event photo' },
+      { src: 'src/images/honors/IMG_0630.jpeg', alt: 'Honors event photo' },
+      { src: 'src/images/honors/IMG_0633.jpeg', alt: 'Honors community recognition photo' },
     ],
   },
   {
@@ -155,9 +157,6 @@ const sections: Section[] = [
 const supporterNames = [
   'Parnall Law Firm',
   'Thunderbird Harley Davidson',
-  'Stuck Lizard Vineyards',
-  'KKOB radio personality Brandon Vogt',
-  'KKOB personality Eric Straus',
   'Randy Coffing',
   'William Martinez',
   'Patricia Jacobs',
@@ -178,15 +177,45 @@ const supporterNames = [
   'Two Maids',
   'Safety Flare Company',
   'Advantage Automotive',
+  'Stuck Lizard Vineyards',
+  'KKOB radio personality Brandon Vogt',
+  'KKOB personality Eric Straus',
+  "Mike's Quality Painting",
+  'Alliance Landscaping',
+  'Joan Reynolds',
+  'Jeff and Diane Berry',
+  'Bill Lescure, Albuquerque Home Show',
+  'Hydrobar',
+  'The Grill on San Mateo',
+  'Rob Rispoli',
+  'Tina Reese',
+  'Megan Ewing',
+  'Rick Martinez',
+  'Micah Wilson',
+  'Steven Mac',
+  'Jairo Villalobos',
+  'Hennine Morley',
+  'Justin Hawkins',
+  'Jimmy and Nadine Daskalos',
+  'Paul Nickel',
+  'Natalie Stout',
+  'Daniel Garcia',
+  'Federick Sexe',
+  'Savannah Jiron',
+  'CJ Rodden',
+  'Russell Perkins',
+  'Rebecca Auge',
+  'Frank Smith',
+  'Vikki Ridgley',
 ];
 
 const missionText =
-    'Our vision is to ensure all wheelchair, bedridden and nursing home veterans in New Mexico to understand our gratitude for their service to this country with a hand crafted branch specific lap robe.';
+  'Our vision is to ensure all wheelchair, bedridden and nursing home veterans in New Mexico to understand our gratitude for their service to this country with a hand crafted branch specific lap robe.';
 
 const donationAddress = [
   'NM Lap Robes For Veterans',
   '1852 Smarty Jones Street SE',
-  'Albuquerque, NM, United States, New Mexico',
+  'Albuquerque, NM, 87123',
 ];
 
 const contactLines = [
@@ -195,6 +224,14 @@ const contactLines = [
   'Albuquerque, NM, United States, New Mexico',
   'nmlaprobesforveterans@gmail.com',
   '(505) 355-9801',
+];
+
+const staffNames = [
+  'John Baerman',
+  'David Cuellar',
+  'Garry Gaffney',
+  'Jeffrey Archuleta',
+  'Kevin James',
 ];
 
 const donationInstructions = [
@@ -222,15 +259,15 @@ const renderGallery = (items: GalleryItem[]) => {
   return `
     <div class="gallery">
       ${items
-      .map(
+        .map(
           (item) => `
             <figure class="gallery-card">
               <img src="${item.src}" alt="${item.alt}" />
               <figcaption>${item.caption ?? item.alt}</figcaption>
             </figure>
           `,
-      )
-      .join('')}
+        )
+        .join('')}
     </div>
   `;
 };
@@ -244,20 +281,20 @@ const renderEventCarousel = (items: GalleryItem[]) => {
     <div class="event-carousel" data-carousel>
       <div class="event-carousel-track">
         ${items
-      .map(
-          (item, index) => `
+          .map(
+            (item, index) => `
               <figure class="gallery-card event-slide" data-slide="${index}" ${index === 0 ? '' : 'hidden'}>
                 <img src="${item.src}" alt="${item.alt}" />
                 <figcaption>${item.caption ?? item.alt}</figcaption>
               </figure>
             `,
-      )
-      .join('')}
+          )
+          .join('')}
       </div>
       <div class="event-carousel-dots" role="tablist" aria-label="Event images">
         ${items
-      .map(
-          (_, index) => `
+          .map(
+            (_, index) => `
               <button
                 type="button"
                 class="carousel-dot${index === 0 ? ' is-active' : ''}"
@@ -266,8 +303,8 @@ const renderEventCarousel = (items: GalleryItem[]) => {
                 aria-selected="${index === 0 ? 'true' : 'false'}"
               ></button>
             `,
-      )
-      .join('')}
+          )
+          .join('')}
       </div>
     </div>
   `;
@@ -287,7 +324,7 @@ const renderSupporterNames = () => `
 
 const renderSectionPanel = (section: Section) => {
   const isStackedGallerySection =
-      section.id === 'events' || section.id === 'veteran-recipients' || section.id === 'our-volunteers' || section.id === 'our-supporters';
+    section.id === 'events' || section.id === 'veteran-recipients' || section.id === 'our-volunteers' || section.id === 'our-supporters';
 
   return `
     <section id="${section.id}" class="section">
@@ -358,15 +395,15 @@ const renderRecipientsIntro = () => `
         </div>
         <div class="mini-gallery">
           ${newestRecipients
-    .map(
-        (item) => `
+            .map(
+              (item) => `
                 <figure class="gallery-card">
                   <img src="${item.src}" alt="${item.alt}" />
                   <figcaption>${item.caption ?? item.alt}</figcaption>
                 </figure>
               `,
-    )
-    .join('')}
+            )
+            .join('')}
         </div>
       </div>
     </div>
@@ -386,6 +423,8 @@ const renderContactTab = () => `
             ${donationAddress.map((line) => `<li>${line}</li>`).join('')}
             <li><a href="tel:+15053559801">(505) 355-9801</a></li>
             <li><a href="mailto:nmlaprobesforveterans@gmail.com">nmlaprobesforveterans@gmail.com</a></li>
+            <li><strong>Staff</strong></li>
+            ${staffNames.map((name) => `<li>${name}</li>`).join('')}
           </ul>
         </section>
         <section class="contact-page-card" aria-label="Support mission details">
@@ -408,6 +447,14 @@ const renderDonationTab = () => `
           <p class="eyebrow">Donation Options</p>
           <h2>Support NM Lap Robes For Veterans</h2>
           <p>Your donation helps purchase materials so volunteers can continue creating branch-specific lap robes for veterans across New Mexico.</p>
+          <h3>Why are NM Lap Robes for veterans important?</h3>
+          <p>NM Lap Robes for Veterans seems to be an organization that provides lap robes to veterans, particularly those who use wheelchairs. Lap robes can be important for several reasons:</p>
+          <ul class="footer-list donation-mailing-list">
+            <li>They provide physical comfort and warmth to veterans, which can be especially important for those who may be experiencing health issues or disabilities as a result of their service.</li>
+            <li>They can also serve as a symbol of appreciation and care for the sacrifices made by veterans.</li>
+            <li>Additionally, lap robes can help to promote a sense of dignity and comfort in public settings, such as at events or in hospitals.</li>
+          </ul>
+          <p>Overall, NM Lap Robes for Veterans appears to be an organization that is dedicated to supporting and showing appreciation for veterans in a practical and meaningful way.</p>
           <p>Use the QR codes in the image for Venmo, Cash App, Zelle, or PayPal, or mail a check to the address below.</p>
           <ul class="footer-list donation-mailing-list">
             ${donationAddress.map((line) => `<li>${line}</li>`).join('')}
@@ -450,9 +497,9 @@ const renderPersistentFooterBand = () => {
               <img src="${contactSupportImage}" alt="Support NM Lap Robes For Veterans" class="donation-link-image" />
             </a>
           </p>
-          <p class="contact-note contact-note--center">
+         <!-- <p class="contact-note contact-note&#45;&#45;center">
             and choose NM Lap Robes for Veterans and make your donation.
-          </p>
+          </p>-->
         </div>
         <div class="footer-contact-block" aria-label="Contact information">
           <h3 class="footer-heading">Contact Information</h3>
@@ -461,9 +508,14 @@ const renderPersistentFooterBand = () => {
             <li>Albuquerque, NM</li>
             ${contactEmail ? `<li><a href="${emailHref}">${contactEmail}</a></li>` : ''}
             ${contactPhone ? `<li><a href="${phoneHref}">${contactPhone}</a></li>` : ''}
+            <li><strong>Staff</strong></li>
+            ${staffNames.map((name) => `<li>${name}</li>`).join('')}
           </ul>
           <h3 class="footer-heading footer-heading--secondary">Interested in Volunteering?</h3>
           ${contactEmail ? `<p class="footer-volunteer">email: <a href="${emailHref}">${contactEmail}</a></p>` : ''}
+          <h3 class="footer-heading footer-heading--third">Website designed by </h3>
+          <span class="footer-designer-name">Denise Rose Mascardo</span>
+          <span class="footer-designer-name">dnsecode@gmail.com</span>
         </div>
       </div>
     </section>
@@ -532,39 +584,39 @@ const tabs = [
 ];
 
 const tabTriggerMarkup = tabs
-    .map(
-        (tab) => `
+  .map(
+    (tab) => `
       <button type="button" class="tab-trigger" data-tab-target="${tab.id}" aria-controls="tab-${tab.id}" role="tab">
         <span>${tab.label}</span>
         <small>${tab.description}</small>
       </button>
     `,
-    )
-    .join('');
+  )
+  .join('');
 
 const tabPanelsMarkup = tabs
-    .map(
-        (tab) => `
+  .map(
+    (tab) => `
       <section id="tab-${tab.id}" class="tab-panel" data-tab="${tab.id}" role="tabpanel" hidden>
         ${tab.content}
       </section>
     `,
-    )
-    .join('');
+  )
+  .join('');
 
 const navMarkup = navigation
-    .map((item) => {
-      if (item.external) {
-        return `<a href="${item.href}" target="_blank" rel="noreferrer">${item.label}</a>`;
-      }
+  .map((item) => {
+    if (item.external) {
+      return `<a href="${item.href}" target="_blank" rel="noreferrer">${item.label}</a>`;
+    }
 
-      if (!item.tabId) {
-        return '';
-      }
+    if (!item.tabId) {
+      return '';
+    }
 
-      return `<button type="button" class="tab-link" data-tab-target="${item.tabId}" aria-controls="tab-${item.tabId}">${item.label}</button>`;
-    })
-    .join('');
+    return `<button type="button" class="tab-link" data-tab-target="${item.tabId}" aria-controls="tab-${item.tabId}">${item.label}</button>`;
+  })
+  .join('');
 
 const app = document.createElement('div');
 app.className = 'app-shell';
@@ -1427,6 +1479,19 @@ app.innerHTML = `
       font-size: clamp(1.35rem, 1.8vw, 1.75rem);
     }
 
+    .footer-heading--third {
+      margin-top: 12px;
+      font-size: clamp(1.05rem, 1.35vw, 1.2rem);
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .footer-designer-name {
+      color: #7a1111;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
     .footer-volunteer {
       margin: 0;
     }
@@ -1722,6 +1787,10 @@ app.innerHTML = `
 
       .footer-heading--secondary {
         font-size: clamp(1.15rem, 6vw, 1.45rem);
+      }
+
+      .footer-heading--third {
+        font-size: clamp(0.95rem, 4.8vw, 1.1rem);
       }
 
       .footer-foot {
