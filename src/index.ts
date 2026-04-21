@@ -122,7 +122,7 @@ const sections: Section[] = [
     eyebrow: 'Hands Behind Every Lap Robe',
     body: [
       'Our organization is made up strictly of volunteers in the manufacture of our lap robes. Without these unselfish men and women we would not have lap robes to distribute to our deserving veterans. These volunteers put in long hours to get these lap robes made and distributed.',
-      'Recently one of our volunteers was recognized by KOB Channel 4 "Pay It Forward" for her volunteer work.',
+      'Randy Coffing was recently selected as a Pay It Forward honoree in February 2026.',
     ],
     images: [
       { src: 'src/images/voluteer/sewing.jpg', alt: 'Volunteer sewing lap robes' },
@@ -207,6 +207,7 @@ const supporterNames = [
   'Rebecca Auge',
   'Frank Smith',
   'Vikki Ridgley',
+  'NM Desert Sun LLC',
 ];
 
 const missionText =
@@ -322,6 +323,16 @@ const renderSupporterNames = () => `
   </div>
 `;
 
+const renderVolunteerVideo = () => `
+  <figure class="volunteer-video-block">
+    <video class="volunteer-video" controls preload="metadata">
+      <source src="src/video/Pay It 4ward Appreciating veterans.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+    <figcaption>Randy Coffing was recently selected as a Pay It Forward honoree in February 2026.</figcaption>
+  </figure>
+`;
+
 const renderSectionPanel = (section: Section) => {
   const isStackedGallerySection =
     section.id === 'events' || section.id === 'veteran-recipients' || section.id === 'our-volunteers' || section.id === 'our-supporters';
@@ -337,6 +348,7 @@ const renderSectionPanel = (section: Section) => {
           </div>
           <div class="${isStackedGallerySection ? 'stacked-gallery-wrap' : ''}">
             ${renderGallery(section.images ?? [])}
+            ${section.id === 'our-volunteers' ? renderVolunteerVideo() : ''}
             ${section.id === 'our-supporters' ? renderSupporterNames() : ''}
           </div>
         </div>
@@ -419,7 +431,7 @@ const renderContactTab = () => `
         <section class="contact-page-card" aria-label="Organization contact details">
           <h3 class="footer-title">Contact Information</h3>
           <ul class="footer-list contact-page-list">
-            <li><strong>NM Lap Robes For Veterans</strong></li>
+            <!--<li><strong>NM Lap Robes For Veterans</strong></li>-->
             ${donationAddress.map((line) => `<li>${line}</li>`).join('')}
             <li><a href="tel:+15053559801">(505) 355-9801</a></li>
             <li><a href="mailto:nmlaprobesforveterans@gmail.com">nmlaprobesforveterans@gmail.com</a></li>
@@ -455,6 +467,8 @@ const renderDonationTab = () => `
             <li>Additionally, lap robes can help to promote a sense of dignity and comfort in public settings, such as at events or in hospitals.</li>
           </ul>
           <p>Overall, NM Lap Robes for Veterans appears to be an organization that is dedicated to supporting and showing appreciation for veterans in a practical and meaningful way.</p>
+          <p class="footer-designer-name" >Authored by: David Cuellar</p>
+          <br/>
           <p>Use the QR codes in the image for Venmo, Cash App, Zelle, or PayPal, or mail a check to the address below.</p>
           <ul class="footer-list donation-mailing-list">
             ${donationAddress.map((line) => `<li>${line}</li>`).join('')}
@@ -505,11 +519,10 @@ const renderPersistentFooterBand = () => {
           <h3 class="footer-heading">Contact Information</h3>
           <ul class="contact-list contact-list--info">
             <li>1852 Smarty Jones Street SE</li>
-            <li>Albuquerque, NM</li>
+            <li>Albuquerque, NM, 87123</li>
             ${contactEmail ? `<li><a href="${emailHref}">${contactEmail}</a></li>` : ''}
             ${contactPhone ? `<li><a href="${phoneHref}">${contactPhone}</a></li>` : ''}
-            <li><strong>Staff</strong></li>
-            ${staffNames.map((name) => `<li>${name}</li>`).join('')}
+          
           </ul>
           <h3 class="footer-heading footer-heading--secondary">Interested in Volunteering?</h3>
           ${contactEmail ? `<p class="footer-volunteer">email: <a href="${emailHref}">${contactEmail}</a></p>` : ''}
@@ -1177,6 +1190,28 @@ app.innerHTML = `
       border-radius: 20px;
     }
 
+    .volunteer-video-block {
+      margin: 22px 0 0;
+      overflow: hidden;
+      border-radius: 20px;
+      background: #fff;
+      border: 1px solid rgba(31, 35, 40, 0.08);
+    }
+
+    .volunteer-video {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      display: block;
+      background: #111;
+    }
+
+    .volunteer-video-block figcaption {
+      padding: 12px 14px 14px;
+      font-size: 1rem;
+      color: rgba(31, 35, 40, 0.82);
+      line-height: 1.5;
+    }
+
     .supporter-names-title {
       margin: 0 0 12px;
       font-size: clamp(1.2rem, 2vw, 1.55rem);
@@ -1806,7 +1841,6 @@ app.innerHTML = `
     <div class="nav-wrap">
       <div class="brand">
         <span class="brand-mark">New Mexico Veterans</span>
-        <span class="brand-name">NM Lap Robes For Veterans</span>
       </div>
       <nav class="nav-links" aria-label="Primary">
         ${navMarkup}
